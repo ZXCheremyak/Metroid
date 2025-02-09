@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 36fe8b55b8452024bbb37c287f1b824b, type: 3}
+  m_Name: Water
+  m_EditorClassIdentifier: 
+  particles: {fileID: 4182064012797446819, guid: 96d3dec00ab18de46a72a0eb0d63af74, type: 3}
+  elementType: 2
+  strongerElement: {fileID: 11400000, guid: 92ae08255e49e024391a42e8ca2a871e, type: 2}
+  weakerElement: {fileID: 11400000, guid: 41afd7604924f3444ac51a4fcdcd42b2, type: 2}
+  attackSound: {fileID: 0}
+  swapSound: {fileID: 8300000, guid: cf8f2bdcff8c18d499e02a077f5afee8, type: 3}
+  particleColor: {r: 0.23926659, g: 0.28050423, b: 0.8867924, a: 0.8745098}

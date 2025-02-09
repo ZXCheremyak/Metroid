@@ -4,9 +4,7 @@ using System.Collections;
 public class Movement : MonoBehaviour
 {
     Rigidbody2D rb;
-    Parameters parameters;
-
-    [SerializeField]bool canPerformActions;
+    PlayerParameters parameters;
 
 
     [Header("Move")]
@@ -14,10 +12,10 @@ public class Movement : MonoBehaviour
 
     Vector2 moveVector;
 
-    Direction lookDirection;
-
 
     [Header("Dodge")]
+    [SerializeField] AudioClip dodgeSound;
+
     [SerializeField]bool canDodge;
 
     [SerializeField] float dodgeSpeed;
@@ -29,76 +27,105 @@ public class Movement : MonoBehaviour
 
     [Header("Jump")]
     public bool canJump;
+    [SerializeField] AudioClip jumpSound;
 
     [SerializeField]float  maxFallingSpeed;
 
     [SerializeField]float jumpForce;
 
+    Animator animator;
 
-    [Header("Interact")]
-    public IInteractible closestInteractObject;
+    public bool allowOtherAnimations;
+
+    AnimationPlayer animPlayer;
+
+    float startGravityScale;
+    [HideInInspector] public IInteractible closestInteractObject;
 
 
     void Start()
-    {
+    {   
+        animator = GetComponent<Animator>();
         rb = GetComponent<Rigidbody2D>();
-        parameters = GetComponent<Parameters>();
+        parameters = GetComponent<PlayerParameters>();
+        animPlayer = GetComponent<AnimationPlayer>();
+        
+        startGravityScale = rb.gravityScale;
     }
 
     void Update()
     {
-        if(!canPerformActions) return;
+        if(!parameters.actionsAllowed) return;
 
         Move();
         Jump();
         Dodge();
+        Flip();
         Interact();
-
-
-        Direction newDirection = Direction.Right;
-
-        if(moveVector.x > 0){
-            newDirection = Direction.Right;
-            Flip(newDirection);
-        }
-        else if(moveVector.x < 0){
-            newDirection = Direction.Left;
-            Flip(newDirection);
-        }
     }
 
     void Move()
     {
-        if(!canMove) return;
+        if(!canMove) 
+        {
+            return;
+        }
 
-        moveVector.x = Input.GetAxis("Horizontal");
+        moveVector.x = Input.GetAxisRaw("Horizontal");
 
-
-        rb.linearVelocity = new Vector2(moveVector.x * parameters.moveSpeed * parameters.moveSpeedModifier, rb.linearVelocity.y);        
+        if(parameters.isGrounded)
+        {
+            if(moveVector != Vector2.zero)
+            {
+                animPlayer.PlayAnimation("Run");
+            }
+            else{
+                animPlayer.PlayAnimation("Idle");
+            }
+        }
+        
+        rb.linearVelocity = new Vector2(moveVector.x * parameters.moveSpeed, rb.linearVelocity.y);        
         if(rb.linearVelocity.y < -maxFallingSpeed){
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, -maxFallingSpeed);
         }
     }
 
-    void Flip(Direction newDirection){
-        if(newDirection == lookDirection){
-            transform.localScale = new Vector3(1, 1, 1);
+    void Flip(){
+        if(rb.linearVelocity.x < 0)
+        {
+            transform.localScale = new Vector3(-0.7f,0.7f,0.7f);
         }
-        else{
-            transform.localScale = new Vector3(-1, 1, 1);
+        else if(rb.linearVelocity.x > 0)
+        {
+            transform.localScale = new Vector3(0.7f,0.7f,0.7f);
         }
-
-        lookDirection = newDirection;
     }
 
     void Jump()
     {
-        if(!canJump) return;
+        if(!parameters.isGrounded)
+        {   
+            
+            if(rb.linearVelocity.y < 0)
+            {
+                animPlayer.PlayAnimation("Fall");
+            }
+            else if(rb.linearVelocity.y > 0)
+            {
+                if(Input.GetKeyUp(KeyCode.Space))
+                {
+                    rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0);
+                }
+            }
+            return;
+        }
 
         if(Input.GetKeyDown(KeyCode.Space)){
             rb.AddForce(new Vector2(0, 1) * jumpForce);
-            canJump = false;
+            parameters.isGrounded = false;
+            animPlayer.PlayAnimation("Jump");
         }
+
     }
 
     void Dodge(){
@@ -112,25 +139,23 @@ public class Movement : MonoBehaviour
     {
         canMove = false;
         canDodge = false;
-        canPerformActions = false;
+        parameters.actionsAllowed = false;
+
+        animPlayer.PlayAnimation("Dodge");
 
         rb.gravityScale = 0;
 
-        if(lookDirection == Direction.Right)
-        {
-            rb.linearVelocity = new Vector2(1, 0) * dodgeSpeed;
-        }
-        else if(lookDirection == Direction.Left){
-            rb.linearVelocity = new Vector2(-1, 0) * dodgeSpeed;
-        }
+        rb.linearVelocity = new Vector2(transform.localScale.x, 0) * dodgeSpeed;
         
+        EventManager.PlaySound.Invoke(dodgeSound);
+
         yield return new WaitForSeconds(dodgeTime);
         
         canMove = true;
 
-        canPerformActions = true;
+        parameters.actionsAllowed = true;
         
-        rb.gravityScale = 1;
+        rb.gravityScale = startGravityScale;
 
         rb.linearVelocity = new Vector2(0, 0);
 
@@ -140,13 +165,13 @@ public class Movement : MonoBehaviour
     }
     
     void Interact(){
-        if(Input.GetKeyDown(KeyCode.E)){
-            closestInteractObject.Interact();
+        if(Input.GetKeyDown(KeyCode.E) && closestInteractObject != null){
+            closestInteractObject.Interact(GetComponent<PlayerBase>());
         }
     }
-}
 
-enum Direction{
-    Right,
-    Left
+    public void PlayAnimation(string animation){
+        if(!allowOtherAnimations) return;
+        animator.Play(animation);
+    }
 }

@@ -1,70 +1,110 @@
 using UnityEngine;
 using System.Collections;
+using System.IO;
 
-public class Parameters : MonoBehaviour
+public abstract class Parameters : MonoBehaviour, IHitable
 {
-    public float attackDamage;
+    public bool actionsAllowed;
 
-    public Element element;
+    public bool isGrounded;
 
+    [Header("Offensive")]
+    public float damage;
+
+    public float damageMultiplier;
+
+
+    [Header("Health")]
     public float maxHp;
 
     public float hp;
 
+    [Header("Other")]
+    [SerializeField] protected AudioClip[] deathSounds;
+    [SerializeField] protected AudioClip[] takeDamageClips;
     public float moveSpeed;
 
-    public float moveSpeedModifier;
+    public float knockBackPower;
 
-    float speedRecoverTimer;
+    public Element element;
 
-    void Update(){
-        if(speedRecoverTimer > 0){
-            speedRecoverTimer -= Time.deltaTime;
-        }
+    void Start(){
+        EventManager.CheckPointUsed.AddListener(RestoreHp);
     }
 
-    public void TakeDamage(float value, Element attackingElement){
-        
-        hp -= value;
+    public virtual void TakeDamage(float value, Element attackingElement)
+    {
+        if(CompareElements(element, attackingElement) == Result.Weaker){
+            hp -= value / 2f;
+            Debug.Log(value/2f);
+        }
+        else if(CompareElements(element, attackingElement) == Result.Stronger)
+        {
+            hp -= value * 2f;
+            Debug.Log(value*2f);
+        }
+        else{
+            hp -= value;
+            
+            Debug.Log(value);
+        }
+
+        StartCoroutine("KnockBackCoroutine");
+        StartCoroutine("HurtCoroutine");
+        EventManager.PlaySound.Invoke(takeDamageClips[Random.Range(0, takeDamageClips.Length)]);
+
         if(hp <= 0)
         {
-            Die();
+            EventManager.PlaySound.Invoke(deathSounds[Random.Range(0, deathSounds.Length)]);
+            StartCoroutine("Die");
         }
     }
 
-    public void RecoverHealth(float value){
+    IEnumerator HurtCoroutine(){
+        GetComponent<AnimationPlayer>().PlayAnimation("Hit");
+        yield return new WaitForSeconds(0.3f);
+        GetComponent<AnimationPlayer>().PlayAnimation("Idle");
+    }
+
+    public virtual void RecoverHealth(float value)
+    {
         hp += value;
-        if(hp > maxHp){
+        if(hp > maxHp)
+        {
             hp = maxHp;
         }
     }
 
-    public void ChangeSpeed(float value, float time){
-        moveSpeedModifier = value;
-        speedRecoverTimer = time;
-
+    public virtual void RestoreHp(CheckPoint c){
+        hp = maxHp;
     }
 
-
-
-    void Die(){
-        Destroy(gameObject);
+    public void RestoreHp(){
+        hp = maxHp;
     }
 
-    Result CompareElements(Element element1, Element element2){
-        return Result.Stronger;
-        return Result.Weaker;
+    public abstract void Die();
+
+    Result CompareElements(Element attackingElement, Element defendingElement)
+    {
+        if(attackingElement == defendingElement.strongerElement)
+        {
+            return Result.Weaker;
+        }
+        if(attackingElement == defendingElement.weakerElement)
+        {
+            return Result.Stronger;
+        }
         return Result.Equal;
     }
-}
 
-public enum ElementName
-{
-    None,
-    Fire,
-    Water,
-    Air,
-    Earth
+    IEnumerator KnockBackCoroutine(){
+        GetComponent<Rigidbody2D>().AddForce(new Vector2(-transform.localScale.x, 1f) * knockBackPower, ForceMode2D.Impulse);
+        actionsAllowed = false;
+        yield return new WaitForSeconds(0.1f);
+        GetComponent<Rigidbody2D>().linearVelocity = Vector2.zero;
+        actionsAllowed = true;
+    }
 }
 
 public enum Result

@@ -1,0 +1,97 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &7903311998992326978
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2659955951173352491}
+  - component: {fileID: 6298080816462495875}
+  - component: {fileID: 8388033284047593455}
+  - component: {fileID: 4561746711047009996}
+  m_Layer: 0
+  m_Name: EarthBoss
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2659955951173352491
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7903311998992326978}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6298080816462495875
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7903311998992326978}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73dc2f97fb261cb4593723bc35a36f0a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  element: {fileID: 11400000, guid: 92ae08255e49e024391a42e8ca2a871e, type: 2}
+  enemiesNumber: 30
+  skeletonPrefab: {fileID: 4451904192794448116, guid: fe44a2cd1198ae14c829bb2e0e7609e6, type: 3}
+  skeletonSpawnVisual: {fileID: 9184097293362621659, guid: a8538298fcf9fd84b81f8dadc358eff4, type: 3}
+  leftArenaPos: {fileID: 0}
+  rightArenaPos: {fileID: 0}
+--- !u!114 &8388033284047593455
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7903311998992326978}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bf7ba894b5a9e3f48aee93f966dc7e09, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  actionsAllowed: 1
+  isGrounded: 0
+  damage: 5
+  damageMultiplier: 1
+  maxHp: 300
+  hp: 300
+  deathSounds:
+  - {fileID: 8300000, guid: 863e882992e0c8147b9bbe8e1c87af6a, type: 3}
+  takeDamageClips:
+  - {fileID: 8300000, guid: 64c986db0744e56469964dc2768415d3, type: 3}
+  - {fileID: 8300000, guid: b5541058ce52c934fbacb7e0dc0dc102, type: 3}
+  - {fileID: 8300000, guid: ac690b3433aef6f40939c141b2a97c29, type: 3}
+  moveSpeed: 0
+  knockBackPower: 0
+  element: {fileID: 11400000, guid: 92ae08255e49e024391a42e8ca2a871e, type: 2}
+  invulTime: 0
+  expReward: 0
+--- !u!114 &4561746711047009996
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7903311998992326978}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 33a062c085400904aa08f12897738ab7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isDefeated: 0
+  bossName: E
