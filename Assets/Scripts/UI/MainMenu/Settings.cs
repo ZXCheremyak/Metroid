@@ -10,6 +10,9 @@ public class Settings : MonoBehaviour
     void Start(){
         sfxSlider.value = PlayerPrefs.GetFloat("SFXVolume");
         musicSlider.value = PlayerPrefs.GetFloat("MusicVolume");
+        
+        SetSFXVolume();
+        SetMusicVolume();
     }
 
     public void SetSFXVolume(){

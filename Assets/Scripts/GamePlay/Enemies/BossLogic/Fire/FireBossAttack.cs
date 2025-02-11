@@ -86,18 +86,18 @@ public class FireBossAttack : BossAttack
 
     IEnumerator CastFireBallBarrage(){
         Debug.Log("Barrage");
-        for(int i = 0; i < 20; i++)
+        for(int i = 0; i < 40; i++)
         {
             Flip();
             animPlayer.PlayAnimation("AttackStart");
             animPlayer.allowOtherAnimations = false;
-            yield return new WaitForSeconds(0.25f);
+            yield return new WaitForSeconds(0.2f);
             GameObject fireBall = Instantiate(fireBallBarrage.attackPrefab, barragePoints[Random.Range(0, barragePoints.Length)].position, Quaternion.identity);
             fireBall.GetComponent<Rigidbody2D>().linearVelocity = new Vector2((barragePoints[0].position - transform.position).normalized.x * fireBallBarrage.speed, 0);
             SetProjectileParameters(fireBall.GetComponent<Projectile>(), fireBallBarrage);
             animPlayer.allowOtherAnimations = true;
             animPlayer.PlayAnimation("AttackEnd");
-            yield return new WaitForSeconds(0.25f);
+            yield return new WaitForSeconds(0.1f);
         }
         animPlayer.PlayAnimation("Idle");
         yield return new WaitForSeconds(openForAttackWindow);
@@ -107,7 +107,7 @@ public class FireBossAttack : BossAttack
 
     IEnumerator CastMeteorRain(){
         Debug.Log("Meteor rain");
-        for(int i = 0; i < 20; i++)
+        for(int i = 0; i < 70; i++)
         {
             Flip();
             Vector2 meteorSpawnPos = new Vector2(Random.Range(leftPoint.position.x, rightPoint.position.x), leftPoint.position.y/2 + rightPoint.position.y/2);
@@ -116,7 +116,7 @@ public class FireBossAttack : BossAttack
             meteorInstance.GetComponent<Rigidbody2D>().linearVelocity = Vector2.down * meteorRain.speed;
             SetProjectileParameters(meteorInstance.GetComponent<Projectile>(), meteorRain);
 
-            yield return new WaitForSeconds(0.5f);
+            yield return new WaitForSeconds(0.1f);
         }
 
         animPlayer.PlayAnimation("Idle");
